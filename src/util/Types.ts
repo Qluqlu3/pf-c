@@ -8,7 +8,7 @@ export interface PrefectureType {
   prefName: string;
 }
 
-export interface PrefDate {
+export interface PrefData {
   id: number;
   data: {
     year: number;

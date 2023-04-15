@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import throttle from 'lodash/throttle';
 import { Color } from './util/Color';
-import { PrefectureType, PrefDate } from 'util/Types';
+import { PrefectureType, PrefData } from 'util/Types';
 import { Checkbox } from 'components/Checkbox';
 import { prefectureService } from 'api/prefectureService';
 
@@ -30,15 +30,15 @@ const LineChartWrapper = styled.div`
 
 export const App: React.FC = () => {
   const [prefectures, setPrefectures] = useState<PrefectureType[]>([]);
-  const [selectedPrefData, setSelectedPrefData] = useState<PrefDate[]>([]);
-  const [width, setWidth] = useState(window.innerWidth);
+  const [selectedPrefData, setSelectedPrefData] = useState<PrefData[]>([]);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   const mainRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const fetchPrefectures = async () => {
       const response = await prefectureService().GetPrefectures();
-      setPrefectures(response);
+      if (response) setPrefectures(response);
     };
 
     fetchPrefectures();
@@ -46,7 +46,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const handleResize = throttle(() => {
-      if (mainRef.current) setWidth(mainRef.current.getBoundingClientRect().width);
+      if (mainRef.current) setScreenWidth(mainRef.current.getBoundingClientRect().width);
     }, 100);
 
     window.addEventListener('resize', handleResize);
@@ -54,17 +54,17 @@ export const App: React.FC = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [prefectures, width]);
+  }, [prefectures, screenWidth]);
 
   const onClickCheckbox = useCallback(
-    async (prefId: number) => {
+    async (prefId: number): Promise<void> => {
       if (selectedPrefData.some((pref) => pref.id === prefId)) {
         setSelectedPrefData(selectedPrefData.filter((pref) => pref.id !== prefId));
         return;
       }
       const response = await prefectureService().GetPopulation({ prefId });
 
-      setSelectedPrefData([...selectedPrefData, { id: prefId, data: response }]);
+      if (response) setSelectedPrefData([...selectedPrefData, { id: prefId, data: response }]);
     },
     [selectedPrefData]
   );
@@ -84,7 +84,7 @@ export const App: React.FC = () => {
         ))}
       </CheckboxWrapper>
       <LineChartWrapper>
-        <LineChart width={width - 100} height={400} data={selectedPrefData}>
+        <LineChart width={screenWidth - 100} height={400} data={selectedPrefData}>
           <XAxis label={{ value: '年度', position: 'insideBottomRight' }} dataKey='year' stroke={Color.gray800} type='number' domain={[1990, 2045]} height={50} />
           <YAxis label={{ value: '人口(人)', angle: -90, position: 'insideLeft' }} type='number' domain={[10000, 1000000]} stroke={Color.gray800} width={100} />
           <CartesianGrid strokeDasharray='3 3' />
