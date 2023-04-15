@@ -1,0 +1,39 @@
+{
+  "extends": "stylelint-config-standard",
+  "plugins": ["stylelint-order"],
+  "rules": {
+    "indentation": 2,
+    "block-no-empty": true,
+    "declaration-colon-space-after": "always",
+    "declaration-colon-space-before": "never",
+    "declaration-block-trailing-semicolon": "always",
+    "selector-pseudo-element-colon-notation": "single",
+    "selector-pseudo-class-no-unknown": true,
+    "property-no-unknown": true,
+    "value-keyword-case": "lower",
+    "string-quotes": "double",
+    "color-hex-case": "lower",
+    "color-hex-length": "short",
+    "order/properties-alphabetical-order": true,
+    "order/order": ["declarations", { "type": "at-rule" }, { "type": "rule", "selector": "^&:\\w" }, "dollar-variables", "custom-properties", "at-rules", "rules"],
+    "order/properties-order": [
+      "display",
+      "position",
+      "top",
+      "right",
+      "bottom",
+      "left",
+      "border",
+      "background",
+      "color",
+      "font-size",
+      "font-weight",
+      "line-height",
+      "padding",
+      "margin",
+      "width",
+      "height"
+    ]
+  },
+  "processors": ["stylelint-processor-styled-components"]
+}
